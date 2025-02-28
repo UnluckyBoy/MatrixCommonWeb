@@ -1,28 +1,19 @@
 package com.cloudstudio.matrix.matrixcommonweb.controller;
 
-import com.cloudstudio.matrix.matrixcommonweb.model.UserInfoBean;
-import com.cloudstudio.matrix.matrixcommonweb.service.LoginService;
-import com.cloudstudio.matrix.matrixcommonweb.service.UserInfoService;
+import com.cloudstudio.matrix.matrixcommonweb.model.requestBody.userRequest.LoginRequestBody;
+import com.cloudstudio.matrix.matrixcommonweb.service.userhandle.LoginService;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.MatrixEncodeUtil;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.TimeUtil;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.WebServerResponse;
 import com.google.gson.Gson;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName：UserController
@@ -48,17 +39,15 @@ public class UserController {
     /**
      * 登录查询
      * @param response
-     * @param account
-     * @param pass
+     * @param requestBody
      * @throws IOException
      */
     @PostMapping("/login")
-    public void Login(HttpServletResponse response,
-                      @RequestParam("account") String account,
-                      @RequestParam("pass") String pass) throws IOException {
+    public void Login(HttpServletResponse response, @RequestBody LoginRequestBody requestBody) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
-        response.getWriter().write(gson.toJson(loginService.login(account,pass)));
+        System.out.println(TimeUtil.GetTime(true)+" ---请求参数:"+requestBody.toString());
+        response.getWriter().write(gson.toJson(loginService.login(requestBody.getAccount(),requestBody.getPass())));
     }
 
     /**
@@ -72,6 +61,7 @@ public class UserController {
                       @RequestHeader("Authorization") String token) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
+        System.out.println(TimeUtil.GetTime(true)+" ---请求参数:"+token);
         response.getWriter().write(gson.toJson(loginService.getLoginInfo(token)));
     }
 
@@ -80,12 +70,14 @@ public class UserController {
 
     @RequestMapping("/test")
     public void Test(HttpServletResponse response,
+                     @RequestParam("account") String account,
                      @RequestParam("pass") String pass) throws IOException {
         String encode= MatrixEncodeUtil.encodeTwice(pass);
         response.setContentType("application/json;charset=UTF-8");
         Map<String,Object> requestMap=new HashMap<>();
         requestMap.put("encode",encode);
         requestMap.put("decode",MatrixEncodeUtil.decodeTwice(encode));
+        requestMap.put("encodeToBase64DoublePara",MatrixEncodeUtil.encodeToBase64DoublePara(pass,account));
         response.getWriter().write(gson.toJson(WebServerResponse.success("请求成功",requestMap)));
     }
     /*********************查询逻辑:MySql库********************/

@@ -1,18 +1,16 @@
-package com.cloudstudio.matrix.matrixcommonweb.service.Impl;
+package com.cloudstudio.matrix.matrixcommonweb.service.Impl.userhandleImpl;
 
 import com.cloudstudio.matrix.matrixcommonweb.model.UserInfoBean;
-import com.cloudstudio.matrix.matrixcommonweb.service.LoginService;
-import com.cloudstudio.matrix.matrixcommonweb.service.UserInfoService;
+import com.cloudstudio.matrix.matrixcommonweb.service.userhandle.LoginService;
+import com.cloudstudio.matrix.matrixcommonweb.service.userhandle.UserInfoService;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.*;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,9 +29,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public WebServerResponse login(String account, String password) {
-        System.out.println(TimeUtil.GetTime(true)+" ---参数--account:"+account+"  pass:"+password);
         Map<String,Object> requestMap=new HashMap<>();
         String passTemp= MatrixEncodeUtil.decodeFromBase64(password);//先解密
+        System.out.println(TimeUtil.GetTime(true)+"password:"+passTemp); // 输出原密码
         int index = passTemp.indexOf('+');
         if (index != -1) {
             String originalPass = passTemp.substring(0, index);
@@ -62,8 +60,7 @@ public class LoginServiceImpl implements LoginService {
                 return WebServerResponse.success("登录成功","Bearer "+ tokenResultMap.get("newToken"));
             }
         } else {
-            //System.out.println(passTemp); // 如果未找到 '+'，则输出原始字符串
-            return WebServerResponse.failure("后台异常：密码解码ERROR!"+passTemp);
+            return WebServerResponse.failure("后台异常：密码解码ERROR!---"+passTemp);
         }
     }
 

@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 public class WebServerResponse {
-    private boolean type;//处理状态
+    private boolean success;//处理状态
     private int code;//处理代码
     private String msg;//处理描述
     private Object responseData;//处理数据
@@ -20,7 +20,7 @@ public class WebServerResponse {
 
     public static WebServerResponse success(){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(true);
+        resultResponse.setSuccess(true);
         resultResponse.setCode(ResponseCode.SUCCESS.getCode());
         resultResponse.setMsg(ResponseCode.SUCCESS.getMsg());
         resultResponse.setResponseData(null);
@@ -28,7 +28,7 @@ public class WebServerResponse {
     }
     public static WebServerResponse success(Object object){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(true);
+        resultResponse.setSuccess(true);
         resultResponse.setCode(ResponseCode.SUCCESS.getCode());
         resultResponse.setMsg(ResponseCode.SUCCESS.getMsg());
         resultResponse.setResponseData(object);
@@ -36,7 +36,7 @@ public class WebServerResponse {
     }
     public static WebServerResponse success(String message){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(true);
+        resultResponse.setSuccess(true);
         resultResponse.setCode(ResponseCode.SUCCESS.getCode());
         resultResponse.setMsg(message);
         resultResponse.setResponseData(null);
@@ -44,7 +44,7 @@ public class WebServerResponse {
     }
     public static WebServerResponse success(String message,Object object){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(true);
+        resultResponse.setSuccess(true);
         resultResponse.setCode(ResponseCode.SUCCESS.getCode());
         resultResponse.setMsg(message);
         resultResponse.setResponseData(object);
@@ -52,7 +52,7 @@ public class WebServerResponse {
     }
     public static WebServerResponse failure(){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(false);
+        resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.FAILED.getCode());
         resultResponse.setMsg(ResponseCode.FAILED.getMsg());
         resultResponse.setResponseData(null);
@@ -68,7 +68,7 @@ public class WebServerResponse {
 //    }
     public static WebServerResponse failure(String message){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(false);
+        resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.FAILED.getCode());
         resultResponse.setMsg(message);
         resultResponse.setResponseData(null);
@@ -81,7 +81,7 @@ public class WebServerResponse {
      */
     public static WebServerResponse tokenError(){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(false);
+        resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.TOKEN_ERROR.getCode());
         resultResponse.setMsg(ResponseCode.TOKEN_ERROR.getMsg());
         resultResponse.setResponseData(null);
@@ -94,7 +94,7 @@ public class WebServerResponse {
      */
     public static WebServerResponse tokenExpired(){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(false);
+        resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.TOKEN_EXPIRED.getCode());
         resultResponse.setMsg(ResponseCode.TOKEN_EXPIRED.getMsg());
         resultResponse.setResponseData(null);
@@ -107,7 +107,7 @@ public class WebServerResponse {
      */
     public static WebServerResponse notLogin(){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(false);
+        resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.NO_LOGIN.getCode());
         resultResponse.setMsg(ResponseCode.NO_LOGIN.getMsg());
         resultResponse.setResponseData(null);
@@ -116,7 +116,7 @@ public class WebServerResponse {
 
     public static WebServerResponse paramError(){
         WebServerResponse resultResponse=new WebServerResponse();
-        resultResponse.setType(false);
+        resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.PARAM_ERROR.getCode());
         resultResponse.setMsg(ResponseCode.PARAM_ERROR.getMsg());
         resultResponse.setResponseData(null);

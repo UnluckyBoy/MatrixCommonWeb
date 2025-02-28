@@ -1,4 +1,4 @@
-package com.cloudstudio.matrix.matrixcommonweb.service;
+package com.cloudstudio.matrix.matrixcommonweb.service.userhandle;
 
 import com.cloudstudio.matrix.matrixcommonweb.model.UserInfoBean;
 

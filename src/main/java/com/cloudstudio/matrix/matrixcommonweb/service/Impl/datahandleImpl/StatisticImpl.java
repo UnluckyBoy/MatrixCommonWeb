@@ -1,9 +1,9 @@
-package com.cloudstudio.matrix.matrixcommonweb.service.Impl;
+package com.cloudstudio.matrix.matrixcommonweb.service.Impl.datahandleImpl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.cloudstudio.matrix.matrixcommonweb.model.StatisticsBean;
 import com.cloudstudio.matrix.matrixcommonweb.model.mapper.StatisticsMapper;
-import com.cloudstudio.matrix.matrixcommonweb.service.StatisticService;
+import com.cloudstudio.matrix.matrixcommonweb.service.datahandle.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

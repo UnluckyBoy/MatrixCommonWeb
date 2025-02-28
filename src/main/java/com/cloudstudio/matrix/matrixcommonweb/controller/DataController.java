@@ -1,7 +1,7 @@
 package com.cloudstudio.matrix.matrixcommonweb.controller;
 
 import com.cloudstudio.matrix.matrixcommonweb.model.StatisticsBean;
-import com.cloudstudio.matrix.matrixcommonweb.service.StatisticService;
+import com.cloudstudio.matrix.matrixcommonweb.service.datahandle.StatisticService;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.TimeUtil;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.WebServerResponse;
 import com.google.gson.Gson;

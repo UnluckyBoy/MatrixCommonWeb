@@ -14,8 +14,8 @@ public class MatrixEncodeUtil {
     private static final String matrixKey="+CloudStudio";
 
     // 将字符串转换为Base64编码的乱码
-    public static String encodeToBase64DoublePara(String input,String strKey) {
-        byte[] byteArray = (input+matrixKey+strKey).getBytes();
+    public static String encodeToBase64DoublePara(String pass,String account) {
+        byte[] byteArray = (pass+matrixKey+account).getBytes();
         return Base64.getEncoder().encodeToString(byteArray);
     }
     public static String encode(String input) {

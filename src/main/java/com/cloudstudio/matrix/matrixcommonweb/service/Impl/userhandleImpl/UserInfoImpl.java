@@ -1,9 +1,9 @@
-package com.cloudstudio.matrix.matrixcommonweb.service.Impl;
+package com.cloudstudio.matrix.matrixcommonweb.service.Impl.userhandleImpl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.cloudstudio.matrix.matrixcommonweb.model.UserInfoBean;
 import com.cloudstudio.matrix.matrixcommonweb.model.mapper.UserMapper;
-import com.cloudstudio.matrix.matrixcommonweb.service.UserInfoService;
+import com.cloudstudio.matrix.matrixcommonweb.service.userhandle.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

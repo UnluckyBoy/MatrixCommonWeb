@@ -5,6 +5,7 @@ import com.cloudstudio.matrix.matrixcommonweb.service.userhandle.LoginService;
 import com.cloudstudio.matrix.matrixcommonweb.service.userhandle.UserInfoService;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.*;
 import jakarta.annotation.Resource;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -45,12 +46,7 @@ public class LoginServiceImpl implements LoginService {
                 return WebServerResponse.failure("登录失败");
             }else{
                 System.out.println(TimeUtil.GetTime(true)+" ---登录成功:"+userInfoBean);
-                Map<String,Object> tempMap=new HashMap<>();
-                tempMap.put("uAccount",userInfoBean.getUAccount());
-                tempMap.put("uName",userInfoBean.getUName());
-                tempMap.put("organization_name",userInfoBean.getOrganization_name());
-                tempMap.put("headerImageUrl",userInfoBean.getHeaderImageUrl());
-                tempMap.put("authority_key",userInfoBean.getAuthority_key());
+                Map<String, Object> tempMap = getStringObjectMap(userInfoBean);
                 Map<String,Object> tokenResultMap=JwtUtil.generateToken(userInfoBean.getUAccount());
                 if(!(Boolean) tokenResultMap.get("result")){
                     //存在token,删除redis缓存,使令牌无效
@@ -62,6 +58,19 @@ public class LoginServiceImpl implements LoginService {
         } else {
             return WebServerResponse.failure("后台异常：密码解码ERROR!---"+passTemp);
         }
+    }
+
+    @NotNull
+    private static Map<String, Object> getStringObjectMap(UserInfoBean userInfoBean) {
+        Map<String,Object> tempMap=new HashMap<>();
+        tempMap.put("uAccount", userInfoBean.getUAccount());
+        tempMap.put("uName", userInfoBean.getUName());
+        tempMap.put("organization_name", userInfoBean.getOrganization_name());
+        tempMap.put("departmentCode", userInfoBean.getDepartmentCode());
+        tempMap.put("departmentName", userInfoBean.getDepartmentName());
+        tempMap.put("headerImageUrl", userInfoBean.getHeaderImageUrl());
+        tempMap.put("authority_key", userInfoBean.getAuthority_key());
+        return tempMap;
     }
 
     @Override

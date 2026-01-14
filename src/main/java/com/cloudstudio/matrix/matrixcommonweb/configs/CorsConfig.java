@@ -30,8 +30,6 @@ public class CorsConfig extends WebMvcConfigurationSupport {
                 .allowedOrigins("*")
                 .allowedMethods("*")
                 .allowedHeaders("*");
-        //.allowCredentials(true) // 是否允许发送Cookie信息
-        //.maxAge(3600); // 预检请求的缓存时间(秒)
         super.addCorsMappings(registry);
     }
 

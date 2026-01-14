@@ -13,7 +13,7 @@ public class WebServerResponse {
     private boolean success;//处理状态
     private int code;//处理代码
     private String msg;//处理描述
-    private Object responseData;//处理数据
+    private Object content;//处理数据
 
     private WebServerResponse(){};
 
@@ -23,7 +23,7 @@ public class WebServerResponse {
         resultResponse.setSuccess(true);
         resultResponse.setCode(ResponseCode.SUCCESS.getCode());
         resultResponse.setMsg(ResponseCode.SUCCESS.getMsg());
-        resultResponse.setResponseData(null);
+        resultResponse.setContent(null);
         return resultResponse;
     }
     public static WebServerResponse success(Object object){
@@ -31,7 +31,7 @@ public class WebServerResponse {
         resultResponse.setSuccess(true);
         resultResponse.setCode(ResponseCode.SUCCESS.getCode());
         resultResponse.setMsg(ResponseCode.SUCCESS.getMsg());
-        resultResponse.setResponseData(object);
+        resultResponse.setContent(object);
         return resultResponse;
     }
     public static WebServerResponse success(String message){
@@ -39,7 +39,7 @@ public class WebServerResponse {
         resultResponse.setSuccess(true);
         resultResponse.setCode(ResponseCode.SUCCESS.getCode());
         resultResponse.setMsg(message);
-        resultResponse.setResponseData(null);
+        resultResponse.setContent(null);
         return resultResponse;
     }
     public static WebServerResponse success(String message,Object object){
@@ -47,7 +47,7 @@ public class WebServerResponse {
         resultResponse.setSuccess(true);
         resultResponse.setCode(ResponseCode.SUCCESS.getCode());
         resultResponse.setMsg(message);
-        resultResponse.setResponseData(object);
+        resultResponse.setContent(object);
         return resultResponse;
     }
     public static WebServerResponse failure(){
@@ -55,7 +55,7 @@ public class WebServerResponse {
         resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.FAILED.getCode());
         resultResponse.setMsg(ResponseCode.FAILED.getMsg());
-        resultResponse.setResponseData(null);
+        resultResponse.setContent(null);
         return resultResponse;
     }
 //    public static WebServerResponse failure(AuthenticationException exception){
@@ -71,7 +71,16 @@ public class WebServerResponse {
         resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.FAILED.getCode());
         resultResponse.setMsg(message);
-        resultResponse.setResponseData(null);
+        resultResponse.setContent(null);
+        return resultResponse;
+    }
+
+    public static WebServerResponse winning(String message){
+        WebServerResponse resultResponse=new WebServerResponse();
+        resultResponse.setSuccess(false);
+        resultResponse.setCode(ResponseCode.WINNING.getCode());
+        resultResponse.setMsg(message);
+        resultResponse.setContent(null);
         return resultResponse;
     }
 
@@ -84,7 +93,7 @@ public class WebServerResponse {
         resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.TOKEN_ERROR.getCode());
         resultResponse.setMsg(ResponseCode.TOKEN_ERROR.getMsg());
-        resultResponse.setResponseData(null);
+        resultResponse.setContent(null);
         return resultResponse;
     }
 
@@ -97,7 +106,7 @@ public class WebServerResponse {
         resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.TOKEN_EXPIRED.getCode());
         resultResponse.setMsg(ResponseCode.TOKEN_EXPIRED.getMsg());
-        resultResponse.setResponseData(null);
+        resultResponse.setContent(null);
         return resultResponse;
     }
 
@@ -110,7 +119,7 @@ public class WebServerResponse {
         resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.NO_LOGIN.getCode());
         resultResponse.setMsg(ResponseCode.NO_LOGIN.getMsg());
-        resultResponse.setResponseData(null);
+        resultResponse.setContent(null);
         return resultResponse;
     }
 
@@ -119,7 +128,7 @@ public class WebServerResponse {
         resultResponse.setSuccess(false);
         resultResponse.setCode(ResponseCode.PARAM_ERROR.getCode());
         resultResponse.setMsg(ResponseCode.PARAM_ERROR.getMsg());
-        resultResponse.setResponseData(null);
+        resultResponse.setContent(null);
         return resultResponse;
     }
 }

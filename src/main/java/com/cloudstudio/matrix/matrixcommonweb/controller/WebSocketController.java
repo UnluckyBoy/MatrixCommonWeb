@@ -1,17 +1,23 @@
 package com.cloudstudio.matrix.matrixcommonweb.controller;
 
-import com.cloudstudio.matrix.matrixcommonweb.controller.component.MatrixWebSocketHandler;
+import com.cloudstudio.matrix.matrixcommonweb.model.chatBean.ChatMessage;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.TimeUtil;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.WebServerResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @ClassName：WebSocketController
@@ -22,37 +28,12 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/WebApi")
 public class WebSocketController {
-    private final MatrixWebSocketHandler webSocketHandler;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final Gson gson=new Gson();
-
-    @Autowired
-    public WebSocketController(MatrixWebSocketHandler webSocketHandler) {
-        this.webSocketHandler = webSocketHandler;
-    }
-
-    @PostMapping("/connect")
-    public void connectServer(HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-
-        boolean result = false;
-        if(result){
-            response.getWriter().write(gson.toJson(WebServerResponse.success()));
-        }else{
-            response.getWriter().write(gson.toJson(WebServerResponse.failure()));
-        }
-    }
-
-    @PostMapping("/send")
-    public void sendMessage(HttpServletResponse response, @RequestParam String ip, @RequestParam String message) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-
-        System.out.println(TimeUtil.GetTime(true)+" ---请求参数:ip="+ip+"  message="+message);
-        boolean result=webSocketHandler.sendMessageToIp(ip, message);
-        if(result){
-            response.getWriter().write(gson.toJson(WebServerResponse.success()));
-        }else{
-            response.getWriter().write(gson.toJson(WebServerResponse.failure()));
-        }
+    @MessageMapping("/chat")
+    @SendToUser("/queue/reply")
+    public ChatMessage handleChatMessage(ChatMessage message) {
+        // 处理消息并返回给特定用户
+        return message;
     }
 }

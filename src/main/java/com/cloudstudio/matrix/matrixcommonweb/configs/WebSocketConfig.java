@@ -1,10 +1,10 @@
 package com.cloudstudio.matrix.matrixcommonweb.configs;
 
-import com.cloudstudio.matrix.matrixcommonweb.controller.component.MatrixWebSocketHandler;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.socket.config.annotation.*;
 
 /**
  * @ClassName：WebSocketConfig
@@ -13,17 +13,17 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
  * @Description:WebSocket配置类
  */
 @Configuration
-@EnableWebSocket
-public class WebSocketConfig implements WebSocketConfigurer {
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final MatrixWebSocketHandler webSocketHandler;
-
-    public WebSocketConfig(MatrixWebSocketHandler webSocketHandler) {
-        this.webSocketHandler = webSocketHandler;
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/queue"); // 用于点对点消息
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/ws").setAllowedOrigins("*");
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws").withSockJS();
     }
 }

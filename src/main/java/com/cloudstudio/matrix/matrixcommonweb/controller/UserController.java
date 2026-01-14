@@ -6,7 +6,9 @@ import com.cloudstudio.matrix.matrixcommonweb.webtool.MatrixEncodeUtil;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.TimeUtil;
 import com.cloudstudio.matrix.matrixcommonweb.webtool.WebServerResponse;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/userApi")
+@Slf4j
 public class UserController {
 //    @Resource
 //    private RedisTemplate<String,Map<String,Object>> redisTemplate;
@@ -32,7 +35,8 @@ public class UserController {
     @Autowired
     LoginService loginService;
 
-    private static final Gson gson=new Gson();//Json数据对象
+    // private static final Gson gson=new Gson();//Json数据对象
+    private static final Gson gson=new GsonBuilder().serializeNulls().create();//Json数据对象,强制将NULL返回
 
 
     /***********************查询逻辑:MySql库********************/
@@ -46,7 +50,7 @@ public class UserController {
     public void Login(HttpServletResponse response, @RequestBody LoginRequestBody requestBody) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
-        System.out.println(TimeUtil.GetTime(true)+" ---请求参数:"+requestBody.toString());
+        System.out.println(TimeUtil.GetTime(true)+" -->入参:"+requestBody.toString());
         response.getWriter().write(gson.toJson(loginService.login(requestBody.getAccount(),requestBody.getPass())));
     }
 
@@ -60,8 +64,7 @@ public class UserController {
     public void getLoginInfo(HttpServletResponse response,
                       @RequestHeader("Authorization") String token) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
-
-        System.out.println(TimeUtil.GetTime(true)+" ---请求参数:"+token);
+        System.out.println(TimeUtil.GetTime(true)+" -->入参:"+token);
         response.getWriter().write(gson.toJson(loginService.getLoginInfo(token)));
     }
 
@@ -79,6 +82,13 @@ public class UserController {
         requestMap.put("decode",MatrixEncodeUtil.decodeTwice(encode));
         requestMap.put("encodeToBase64DoublePara",MatrixEncodeUtil.encodeToBase64DoublePara(pass,account));
         response.getWriter().write(gson.toJson(WebServerResponse.success("请求成功",requestMap)));
+    }
+
+    @RequestMapping("/get_test")
+    public void get_test(HttpServletResponse response) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+
+        response.getWriter().write(gson.toJson(WebServerResponse.success("请求成功")));
     }
     /*********************查询逻辑:MySql库********************/
 

@@ -37,12 +37,11 @@ public class JwtUtil {
         try {
             String existingToken = accountTokenMap.get(account);// 检查账号是否已经有一个活动的 token
             String newToken = createToken(new HashMap<>(), account);// 生成新的 token
-            //if (existingToken != null && isTokenActive(existingToken)) {
             if (existingToken != null) {
                 /**
                  * 如果存在token
                  * 返回存在result:false-有token;true-没有token
-                 * 以及新旧token
+                 * 以及更新旧token
                  */
                 System.out.println("账户:" + account + " 已存在Token: " + existingToken);
                 resultMap.put("result",false);

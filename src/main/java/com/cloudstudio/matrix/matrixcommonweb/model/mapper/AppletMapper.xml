@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudstudio.matrix.matrixcommonweb.model.mapper.AppletMapper">
+    <!-- 定义resultMap -->
+    <resultMap id="NewsDetailMap" type="com.cloudstudio.matrix.matrixcommonweb.model.Applet.NewsDetail">
+        <id property="id" column="id"/>
+        <result property="newTitle" column="newTitle"/>
+        <result property="publishTime" column="publishTime"/>
+        <result property="source" column="source"/>
+        <result property="author" column="author"/>
+        <result property="readCount" column="readCount"/>
+        <result property="coverImage" column="coverImage"/>
+        <!-- 指定typeHandler -->
+        <result property="contentParagraphs" column="contentParagraphs"
+                typeHandler="com.cloudstudio.matrix.matrixcommonweb.model.Common.JsonToListTypeHandler"/>
+        <result property="contentImages" column="contentImages"
+                typeHandler="com.cloudstudio.matrix.matrixcommonweb.model.Common.JsonToListTypeHandler"/>
+    </resultMap>
+
+    <!--查询逻辑-->
+    <!--机构信息查询-->
+    <select id="queryOrganization" parameterType="String" resultType="OrganizationBean">
+        select
+            organization_table.organization_Id,
+            organization_table.organization_Name,
+            organization_table.organization_Desc,
+            organization_table.organization_Owner,
+            organization_table.organization_Addr,
+            organization_table.organization_Type
+        from organization_table
+        where organization_table.organization_Id in (#{organization_Id})
+    </select>
+
+    <!--获取新闻列表-->
+    <select id="queryNewsList" resultType="NewsDetail">
+        SELECT
+            newsdetail_table.id,
+            newsdetail_table.newTitle,
+            newsdetail_table.publishTime
+        FROM
+            newsdetail_table
+        ORDER BY
+            newsdetail_table.id DESC
+    </select>
+    <!--新闻信息详情-->
+    <select id="queryNewDetail" resultType="NewsDetail" parameterType="int">
+        SELECT
+            newsdetail_table.id,
+            newsdetail_table.newTitle,
+            newsdetail_table.author,
+            newsdetail_table.publishTime,
+            newsdetail_table.readCount,
+            newsdetail_table.source,
+            newsdetail_table.coverImage,
+            newsdetail_table.contentParagraphs,
+            newsdetail_table.contentImages
+        FROM
+            newsdetail_table
+        WHERE
+            newsdetail_table.id =#{newId}
+    </select>
+    <!--查询逻辑-->
+
+    <!--插入逻辑-->
+    <!--创建反馈-->
+    <insert id="cFeedBack" parameterType="java.util.Map">
+        INSERT INTO feedback_table (
+            feedback_table.title,
+            feedback_table.contactName,
+            feedback_table.contactPhone,
+            feedback_table.contactWechat,
+            feedback_table.feedbackType,
+            feedback_table.feedbackTypeText,
+            feedback_table.selectedCategory,
+            feedback_table.selectedCategoryText,
+            feedback_table.description,
+            feedback_table.targetDetail,
+            feedback_table.imagesCount,
+            feedback_table.imagesUrlList,
+            feedback_table.isAnonymous,
+            feedback_table.submitTime
+        ) VALUES (#{title},#{contactName},#{contactPhone},#{contactWechat},#{feedbackType},#{feedbackTypeText},#{selectedCategory},#{selectedCategoryText},#{description},#{targetDetail},#{imagesCount},#{imagesUrlList},#{isAnonymous},#{submitTime})
+    </insert>
+
+<!--    <insert id="insertNewsDetail" parameterType="com.example.entity.NewsDetail">-->
+<!--        INSERT INTO newsdetail_table (new_title, author, publish_time, read_count, source, cover_image, content_paragraphs, content_images)-->
+<!--        VALUES (-->
+<!--                   #{newTitle},-->
+<!--                   #{author},-->
+<!--                   #{publishTime},-->
+<!--                   #{readCount},-->
+<!--                   #{source},-->
+<!--                   #{coverImage},-->
+<!--                   #{contentParagraphs, typeHandler=com.example.handler.JsonToListTypeHandler},-->
+<!--                   #{contentImages, typeHandler=com.example.handler.JsonToListTypeHandler}-->
+<!--               )-->
+<!--    </insert>-->
+
+    <!--插入逻辑-->
+
+    <!--更新逻辑-->
+    <!--更新逻辑-->
+
+    <!--删除逻辑-->
+    <!--删除逻辑-->
+</mapper>

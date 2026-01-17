@@ -31,6 +31,12 @@ public class AppletController {
     private static final Gson getGson =new Gson();
     private static final Gson gson=new GsonBuilder().serializeNulls().create();
 
+    /**
+     * 获取机构信息API
+     * @param response
+     * @param organization_Id
+     * @throws IOException
+     */
     @RequestMapping("/getOrganization")
     public void getOrganization(HttpServletResponse response, @RequestParam String organization_Id)throws IOException{
         response.setContentType("application/json;charset=UTF-8");
@@ -39,6 +45,12 @@ public class AppletController {
         response.getWriter().write(gson.toJson(appletService.queryOrganization(organization_Id)));
     }
 
+    /**
+     * 反馈API
+     * @param response
+     * @param feedbackBean
+     * @throws IOException
+     */
     @RequestMapping("/feedback")
     public void getFeedback(HttpServletResponse response, @RequestBody FeedbackBean feedbackBean) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
@@ -47,6 +59,12 @@ public class AppletController {
         response.getWriter().write(gson.toJson(appletService.submitFeedBack(feedbackBean)));
     }
 
+    /**
+     * 获取新闻列表API
+     * @param response
+     * @param newId
+     * @throws IOException
+     */
     @RequestMapping("/getNewDetail")
     public void getNewDetail(HttpServletResponse response, @RequestParam int newId) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
@@ -55,6 +73,11 @@ public class AppletController {
         response.getWriter().write(gson.toJson(appletService.queryNewDetail(newId)));
     }
 
+    /**
+     * 获取新闻内容API
+     * @param response
+     * @throws IOException
+     */
     @RequestMapping("/getNewList")
     public void getNewList(HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");

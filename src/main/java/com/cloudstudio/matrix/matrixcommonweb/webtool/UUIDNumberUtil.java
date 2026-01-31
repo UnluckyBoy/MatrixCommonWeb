@@ -13,9 +13,17 @@ public class UUIDNumberUtil {
      * 生成8位UUID
      * @return
      */
-    public static String randUUIDNumber(){
+    public static String randShortUUIDNumber(){
         UUID uuid = UUID.randomUUID();
         return TimeUtil.timeToString(uuid.toString().substring(0, 8));
+    }
+    public static String randMiddleUUIDNumber(){
+        UUID uuid = UUID.randomUUID();
+        return TimeUtil.timeToString(uuid.toString().substring(0, 13));
+    }
+    public static String randLongUUIDNumber(){
+        UUID uuid = UUID.randomUUID();
+        return TimeUtil.timeToString(uuid.toString());
     }
 
     /**

@@ -38,7 +38,7 @@ public class DataController {
      * @param response
      * @throws IOException
      */
-    @PostMapping("/getSystemMonitor")
+    @RequestMapping("/getSystemMonitor")
     public void getSystemMonitor(HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         System.out.println(TimeUtil.GetTime(true)+" -->入参:"+null);

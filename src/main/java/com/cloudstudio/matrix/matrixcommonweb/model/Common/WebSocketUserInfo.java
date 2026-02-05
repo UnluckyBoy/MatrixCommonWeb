@@ -21,6 +21,7 @@ public class WebSocketUserInfo implements Serializable {
 
     private String sessionId;
     private String nickname;
+    private String account;
     private String role;
     private String avatar;
     private LocalDateTime connectTime;
@@ -30,6 +31,7 @@ public class WebSocketUserInfo implements Serializable {
         info.setSessionId(sessionId);
         info.setNickname(nickname != null ? nickname : "用户" +
                 (sessionId.length() > 6 ? sessionId.substring(0, 6) : sessionId));
+        info.setAccount(account);
         info.setRole(role);
         info.setAvatar(avatar);
         info.setOnline(sessions.containsKey(sessionId));

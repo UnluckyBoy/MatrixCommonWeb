@@ -1,4 +1,4 @@
-package com.cloudstudio.matrix.matrixcommonweb.service.Impl.userhandleImpl;
+package com.cloudstudio.matrix.matrixcommonweb.service.userhandle.userhandleImpl;
 
 import com.cloudstudio.matrix.matrixcommonweb.model.UserInfoBean;
 import com.cloudstudio.matrix.matrixcommonweb.service.userhandle.LoginService;
@@ -60,19 +60,11 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
-    @NotNull
-    private static Map<String, Object> getStringObjectMap(UserInfoBean userInfoBean) {
-        Map<String,Object> tempMap=new HashMap<>();
-        tempMap.put("uAccount", userInfoBean.getUAccount());
-        tempMap.put("uName", userInfoBean.getUName());
-        tempMap.put("organization_name", userInfoBean.getOrganization_name());
-        tempMap.put("departmentCode", userInfoBean.getDepartmentCode());
-        tempMap.put("departmentName", userInfoBean.getDepartmentName());
-        tempMap.put("headerImageUrl", userInfoBean.getHeaderImageUrl());
-        tempMap.put("authority_key", userInfoBean.getAuthority_key());
-        return tempMap;
-    }
-
+    /***
+     * token获取信息
+     * @param token
+     * @return
+     */
     @Override
     public WebServerResponse getLoginInfo(String token) {
         /**
@@ -94,5 +86,19 @@ public class LoginServiceImpl implements LoginService {
                 return WebServerResponse.success(userInfoBean);
             }
         }
+    }
+
+
+    @NotNull
+    private static Map<String, Object> getStringObjectMap(UserInfoBean userInfoBean) {
+        Map<String,Object> tempMap=new HashMap<>();
+        tempMap.put("uAccount", userInfoBean.getUAccount());
+        tempMap.put("uName", userInfoBean.getUName());
+        tempMap.put("organization_name", userInfoBean.getOrganization_name());
+        tempMap.put("departmentCode", userInfoBean.getDepartmentCode());
+        tempMap.put("departmentName", userInfoBean.getDepartmentName());
+        tempMap.put("headerImageUrl", userInfoBean.getHeaderImageUrl());
+        tempMap.put("authority_key", userInfoBean.getAuthority_key());
+        return tempMap;
     }
 }

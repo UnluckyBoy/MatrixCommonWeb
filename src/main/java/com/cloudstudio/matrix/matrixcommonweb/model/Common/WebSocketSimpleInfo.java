@@ -18,6 +18,7 @@ public class WebSocketSimpleInfo implements Serializable {
 
     private String sessionId;
     private String nickname;
+    private String account;
     private String role;
     private String avatar;
     private boolean online;

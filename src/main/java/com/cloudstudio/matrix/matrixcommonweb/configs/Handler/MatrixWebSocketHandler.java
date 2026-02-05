@@ -90,15 +90,16 @@ public class MatrixWebSocketHandler extends TextWebSocketHandler {
                     break;
                 case "user_info":
                     // 更新用户信息
+                    String account = jsonNode.has("account") ? jsonNode.get("account").asText() : null;
                     String nickname = jsonNode.has("nickname") ? jsonNode.get("nickname").asText() : null;
                     String avatar = jsonNode.has("avatar") ? jsonNode.get("avatar").asText() : null;
                     String role = jsonNode.has("role") ? jsonNode.get("role").asText() : null;
-                    sessionManager.updateUserInfo(sessionId, nickname,role, avatar);
+                    sessionManager.updateUserInfo(sessionId,account,nickname,role,avatar);
                     WebSocketResponse userInfoResponse = WebSocketResponse.success(
                             "system",
                             "用户信息更新成功"
                     );
-
+                    System.out.println(TimeUtil.GetTime(true)+"WebSocketHandler更新信息:"+account+"->>"+nickname+"->>"+role+"-->>>"+avatar);
                     sendMessage(session, userInfoResponse);
                     break;
                 default:
@@ -256,7 +257,7 @@ public class MatrixWebSocketHandler extends TextWebSocketHandler {
     }
 
     /**
-     * 定期清理无效会话（每分钟执行一次）
+     * 定期清理无效会话-每分钟一次
      */
     @Scheduled(fixedRate = 60000)
     public void cleanupInvalidSessions() {
@@ -274,11 +275,7 @@ public class MatrixWebSocketHandler extends TextWebSocketHandler {
         data.setTotal(sessionManager.getSessionCount());
         data.setUsers(sessionManager.getOnlineUsers());
 
-        WebSocketResponse usersResponse = WebSocketResponse.success(
-                "users",
-                "在线用户列表",
-                data
-        );
+        WebSocketResponse usersResponse = WebSocketResponse.success("users", "在线用户列表", data);
         sendMessage(session, usersResponse);
         System.out.println(TimeUtil.GetTime(true)+"data:"+data+"返回usersResponse:"+usersResponse);
         sendMessage(session, usersResponse);

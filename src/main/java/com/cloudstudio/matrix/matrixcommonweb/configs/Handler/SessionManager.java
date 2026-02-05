@@ -2,11 +2,13 @@ package com.cloudstudio.matrix.matrixcommonweb.configs.Handler;
 
 import com.cloudstudio.matrix.matrixcommonweb.model.Common.WebSocketSimpleInfo;
 import com.cloudstudio.matrix.matrixcommonweb.model.Common.WebSocketUserInfo;
+import com.cloudstudio.matrix.matrixcommonweb.webtool.TimeUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -82,11 +84,45 @@ public class SessionManager {
     /**
      * 更新用户信息
      */
-    public void updateUserInfo(String sessionId, String nickname,String role, String avatar) {
+    public void updateUserInfo(String sessionId,String account,String nickname,String role, String avatar) {
+        // 先检查是否有相同账户但不同会话的情况
+        if (account != null && !account.trim().isEmpty()) {
+            // 查找是否有其他会话使用相同账户
+            for (Map.Entry<String, WebSocketUserInfo> entry : userInfos.entrySet()) {
+                String existingSessionId = entry.getKey();
+                WebSocketUserInfo existingUserInfo = entry.getValue();
+
+                // 如果是相同会话，跳过
+                if (existingSessionId.equals(sessionId)) {
+                    continue;
+                }
+
+                // 如果账户相同但sessionId不同
+                if (existingUserInfo.getAccount() != null && existingUserInfo.getAccount().equals(account)) {
+
+                    System.out.println(TimeUtil.GetTime(true)+"发现重复账户登录: " + account +
+                            "-->>原会话: " + existingSessionId +"-->>新会话: " + sessionId +"-->>关闭原会话: "+ existingSessionId);
+                    // 关闭前一个会话
+                    closeSession(existingSessionId);
+                    // 移除前一个会话的信息
+                    sessions.remove(existingSessionId);
+                    lastActiveTimes.remove(existingSessionId);
+                    userInfos.remove(existingSessionId);
+
+                    // 发送被挤下线的消息
+                    // sendKickOffMessage(existingSessionId, account);
+                    break;
+                }
+            }
+        }
+
         WebSocketUserInfo userInfo = userInfos.getOrDefault(sessionId, new WebSocketUserInfo());
         userInfo.setSessionId(sessionId);
         if (nickname != null) {
             userInfo.setNickname(nickname);
+        }
+        if (account != null) {
+            userInfo.setAccount(account);
         }
         if(role!=null){
             userInfo.setRole(role);
@@ -135,18 +171,18 @@ public class SessionManager {
     /**
      * 获取在线用户列表（转换为 WebSocketSimpleInfo）
      */
-    public java.util.List<WebSocketSimpleInfo> getOnlineUsers() {
+    public List<WebSocketSimpleInfo> getOnlineUsers() {
         java.util.List<WebSocketSimpleInfo> onlineUsers = new java.util.ArrayList<>();
 
         userInfos.forEach((sessionId, userInfo) -> {
             WebSocketSimpleInfo simpleInfo = new WebSocketSimpleInfo();
             simpleInfo.setSessionId(sessionId);
             simpleInfo.setNickname(userInfo.getNickname() != null ?
-                    userInfo.getNickname() :
-                    "用户" + sessionId.substring(0, Math.min(sessionId.length(), 6)));
+                    userInfo.getNickname() :"用户" + sessionId.substring(0, Math.min(sessionId.length(), 6)));
+            simpleInfo.setAccount(userInfo.getAccount());
+            simpleInfo.setRole(userInfo.getRole());
             simpleInfo.setAvatar(userInfo.getAvatar());
-            simpleInfo.setOnline(sessions.containsKey(sessionId) &&
-                    sessions.get(sessionId).isOpen());
+            simpleInfo.setOnline(sessions.containsKey(sessionId) &&sessions.get(sessionId).isOpen());
             simpleInfo.setOnline(sessionExists(userInfo.getSessionId()));
 
             onlineUsers.add(simpleInfo);

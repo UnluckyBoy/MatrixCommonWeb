@@ -1,4 +1,4 @@
-package com.cloudstudio.matrix.matrixcommonweb.service.Impl.userhandleImpl;
+package com.cloudstudio.matrix.matrixcommonweb.service.userhandle.userhandleImpl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.cloudstudio.matrix.matrixcommonweb.model.UserInfoBean;

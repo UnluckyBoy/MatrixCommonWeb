@@ -72,8 +72,7 @@ public class UserController {
 
 
     @RequestMapping("/test")
-    public void Test(HttpServletResponse response,
-                     @RequestParam("account") String account,
+    public void Test(HttpServletResponse response,@RequestParam("account") String account,
                      @RequestParam("pass") String pass) throws IOException {
         String encode= MatrixEncodeUtil.encodeTwice(pass);
         response.setContentType("application/json;charset=UTF-8");

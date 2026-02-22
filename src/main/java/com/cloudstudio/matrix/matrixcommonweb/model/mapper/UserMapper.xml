@@ -29,4 +29,37 @@
             login_info_table.organization_name,
             login_info_table.headerImageUrl
     </select>
+
+    <!--邮箱登录验证-->
+    <select id="emailLogin" parameterType="java.util.Map" resultType="UserInfoBean">
+        SELECT
+            l.uAccount,
+            l.uEmail,
+            l.uName,
+            l.uGender,
+            l.organization_name,
+            l.departmentCode,
+            l.headerImageUrl,
+            d.departmentName
+        FROM
+            login_info_table l
+            INNER JOIN department_table d ON d.departmentCode = l.departmentCode
+        WHERE
+            l.uEmail = #{email}
+        GROUP BY
+            l.uAccount,
+            l.uEmail,
+            l.uName,
+            l.uGender,
+            l.departmentCode,
+            d.departmentName,
+            l.organization_name,
+            l.headerImageUrl
+    </select>
+
+
+    <!--Insert逻辑-->
+    <insert id="regisLoginInfo">
+        insert into login_info_table (uAccount, uEmail) VALUES (#{email}, #{email})
+    </insert>
 </mapper>

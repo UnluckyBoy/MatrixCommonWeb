@@ -47,7 +47,7 @@ public class UserController {
      * @throws IOException
      */
     @PostMapping("/login")
-    public void Login(HttpServletResponse response, @RequestBody LoginRequestBody requestBody) throws IOException {
+    public final void Login(HttpServletResponse response, @RequestBody LoginRequestBody requestBody) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
         System.out.println(TimeUtil.GetTime(true)+" -->入参:"+requestBody.toString());
@@ -61,8 +61,8 @@ public class UserController {
      * @throws IOException
      */
     @PostMapping("/getLoginInfo")
-    public void getLoginInfo(HttpServletResponse response,
-                      @RequestHeader("Authorization") String token) throws IOException {
+    public final void getLoginInfo(HttpServletResponse response,
+                                   @RequestHeader("Authorization") String token) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         System.out.println(TimeUtil.GetTime(true)+" -->入参:"+token);
         response.getWriter().write(gson.toJson(loginService.getLoginInfo(token)));
@@ -72,19 +72,20 @@ public class UserController {
 
 
     @RequestMapping("/test")
-    public void Test(HttpServletResponse response,@RequestParam("account") String account,
-                     @RequestParam("pass") String pass) throws IOException {
+    public final void Test(HttpServletResponse response, @RequestParam("account") String account,
+                           @RequestParam("pass") String pass) throws IOException {
         String encode= MatrixEncodeUtil.encodeTwice(pass);
         response.setContentType("application/json;charset=UTF-8");
         Map<String,Object> requestMap=new HashMap<>();
         requestMap.put("encode",encode);
         requestMap.put("decode",MatrixEncodeUtil.decodeTwice(encode));
         requestMap.put("encodeToBase64DoublePara",MatrixEncodeUtil.encodeToBase64DoublePara(pass,account));
+        requestMap.put("decodeFromBase64DoublePara",MatrixEncodeUtil.decodeFromBase64(MatrixEncodeUtil.encodeToBase64DoublePara(pass,account)));
         response.getWriter().write(gson.toJson(WebServerResponse.success("请求成功",requestMap)));
     }
 
     @RequestMapping("/get_test")
-    public void get_test(HttpServletResponse response) throws IOException {
+    public final void get_test(HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
         response.getWriter().write(gson.toJson(WebServerResponse.success("请求成功")));

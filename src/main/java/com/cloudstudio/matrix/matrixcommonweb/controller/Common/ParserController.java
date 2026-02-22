@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * @Description:
  */
 @Controller
-@RequestMapping("/commonApi")
+@RequestMapping("/numberApi")
 public class ParserController {
     @Autowired
     NumberParserService numberParserService;

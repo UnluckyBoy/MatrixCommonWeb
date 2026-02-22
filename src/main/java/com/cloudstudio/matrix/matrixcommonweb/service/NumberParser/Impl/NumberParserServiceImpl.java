@@ -23,9 +23,10 @@ public class NumberParserServiceImpl implements NumberParserService {
     @Override
     public WebServerResponse parseNumber(ParseRequest request) {
         // 将多行字符串转换为 List<String>
-        List<String> lines = request.getInput().lines().map(String::trim).filter(line -> !line.isEmpty()).collect(Collectors.toList());
+        //List<String> lines = request.getInput().lines().map(String::trim).filter(line -> !line.isEmpty()).collect(Collectors.toList());
         // 调用 NumberParser 处理
-        Map<Integer, Double> result= NumberParser.processStrings(lines);
+        // Map<Integer, Double> result= NumberParser.processStrings(lines);
+        Map<Integer, Double> result = NumberParser.processMultiLineString(request.getInput());
         NumberParser.printResult(result);
         if(!result.isEmpty()){
             System.out.println(TimeUtil.GetTime(true)+"分割成功");

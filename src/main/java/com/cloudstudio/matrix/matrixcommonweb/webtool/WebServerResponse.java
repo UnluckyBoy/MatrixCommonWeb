@@ -53,6 +53,14 @@ public class WebServerResponse {
         resultResponse.setContent(object);
         return resultResponse;
     }
+    public static WebServerResponse loginFailure(){
+        WebServerResponse resultResponse=new WebServerResponse();
+        resultResponse.setSuccess(false);
+        resultResponse.setCode(ResponseCode.QUERY_ERROR.getCode());
+        resultResponse.setMsg(ResponseCode.QUERY_ERROR.getMsg());
+        resultResponse.setContent(null);
+        return resultResponse;
+    }
     public static WebServerResponse failure(){
         WebServerResponse resultResponse=new WebServerResponse();
         resultResponse.setSuccess(false);

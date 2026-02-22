@@ -18,4 +18,6 @@ import java.util.Map;
 @Repository
 public interface UserMapper {
     UserInfoBean loginQuery(Map<String, Object> map);
+    UserInfoBean emailLogin(Map<String, Object> map);//邮箱登录
+    boolean regisLoginInfo(String email);// 插入信息
 }

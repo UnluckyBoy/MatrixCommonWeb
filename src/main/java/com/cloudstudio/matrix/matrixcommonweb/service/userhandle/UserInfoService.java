@@ -12,4 +12,6 @@ import java.util.Map;
  */
 public interface UserInfoService {
     UserInfoBean loginQuery(Map<String, Object> map);
+    UserInfoBean emailLogin(Map<String, Object> map);
+    boolean regisLoginInfo(String email);
 }

@@ -13,7 +13,9 @@ import java.io.Serializable;
 @Data
 public class UserInfoBean implements Serializable {
     private String uAccount;
+    private String uEmail;
     private String uName;
+    private int uGender;
     private String organization_name;
     private String departmentCode;
     private String departmentName;

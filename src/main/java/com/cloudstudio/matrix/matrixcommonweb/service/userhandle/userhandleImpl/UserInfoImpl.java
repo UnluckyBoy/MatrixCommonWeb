@@ -25,4 +25,15 @@ public class UserInfoImpl implements UserInfoService {
     public UserInfoBean loginQuery(Map<String, Object> map) {
         return userMapper.loginQuery(map);
     }
+
+    @DS("mysql")
+    @Override
+    public UserInfoBean emailLogin(Map<String, Object> map) {
+        return userMapper.emailLogin(map);
+    }
+
+    @Override
+    public boolean regisLoginInfo(String email) {
+        return userMapper.regisLoginInfo(email);
+    }
 }

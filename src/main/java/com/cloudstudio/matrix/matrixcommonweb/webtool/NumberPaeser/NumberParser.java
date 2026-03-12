@@ -350,7 +350,7 @@ public class NumberParser {
      *   "0尾各5元" -> "10,20,30,40各5元"
      */
     private static String expandTail(String input) {
-        if (input == null || input.isEmpty() || !input.contains("尾")) {
+        if (input == null || !input.contains("尾")) {
             return input;
         }
 

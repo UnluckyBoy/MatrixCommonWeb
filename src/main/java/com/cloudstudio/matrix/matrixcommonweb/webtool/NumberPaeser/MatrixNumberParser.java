@@ -17,10 +17,30 @@ public class MatrixNumberParser {
     // 保留的中文字符集合(包含数字汉字、生肖、单位、关键词)
     private static final Set<Character> KEEP_CHINESE = new HashSet<>(Arrays.asList(
             '零','一','二','三','四','五','六','七','八','九','十','百',
+            '壹','贰','叁','肆','伍','陆','柒','捌','玖','拾','佰','仟','萬',
             '鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪', '肖',
-            '元','斤','米','各','个','共','总','合','计','红','绿','蓝','单','双',
-            '号','尾')
+            '元','斤','米','块','各','个','共','总','合','计','红','绿','蓝','单','双',
+            '号','尾','头')
     );
+
+    // 波色数字集合
+    private static final Set<Integer> RED_WAVE = new HashSet<>(Arrays.asList(
+            1, 2, 7, 8, 12, 13, 18, 19, 23, 24, 29, 30, 34, 35, 40, 45, 46
+    ));
+    private static final Set<Integer> BLUE_WAVE = new HashSet<>(Arrays.asList(
+            3, 4, 9, 10, 14, 15, 20, 25, 26, 31, 36, 37, 41, 42, 47, 48
+    ));
+    private static final Set<Integer> GREEN_WAVE = new HashSet<>(Arrays.asList(
+            5, 6, 11, 16, 17, 21, 22, 27, 28, 32, 33, 38, 39, 43, 44, 49
+    ));
+
+    // 波色映射
+    private static final Map<String, Set<Integer>> WAVE_MAP = new HashMap<>();
+    static {
+        WAVE_MAP.put("红", RED_WAVE);
+        WAVE_MAP.put("蓝", BLUE_WAVE);
+        WAVE_MAP.put("绿", GREEN_WAVE);
+    }
 
     // 生肖对应的号码映射
     private static final Map<String, List<Integer>> ZODIAC_MAP = new HashMap<>();
@@ -79,35 +99,52 @@ public class MatrixNumberParser {
                 String subStrTrimToValidStart = trimToValidStart(subStr);
                 System.out.println(TimeUtil.GetTime(true) + "\t排除首字符:" + subStrTrimToValidStart);
 
-                Map<Integer, Double> partial = null;
+                String toSimpleNumStr=BigNumberToSimpleTool.convertSimpleChineseNumbers(subStrTrimToValidStart);
+                System.out.println(TimeUtil.GetTime(true) + "\t转小写:" + toSimpleNumStr);
 
-                // 1. 最高优先级：parseEndNum（返回非null表示成功）
-                Map<Integer, Double> endNumResult = parseEndNum(subStrTrimToValidStart);
-                if (endNumResult != null) {
-                    partial = endNumResult;
-                    System.out.println(TimeUtil.GetTime(true) + "\t使用parseEndNum解析成功");
+                Map<Integer, Double> partial;
+
+                // 1. 最高优先级：头解析（parseHeadNum）
+                Map<Integer, Double> headResult = parseHeadNum(toSimpleNumStr);
+                if (headResult != null) {
+                    partial = headResult;
+                    System.out.println(TimeUtil.GetTime(true) + "\t头解析-parseHeadNum解析成功");
                 } else {
-                    // 2. 次优先级：parseZodiacValue（返回非空Map表示成功）
-                    Map<Integer, Double> zodiacResult = parseZodiacValue(subStrTrimToValidStart);
-                    if (!zodiacResult.isEmpty()) {
-                        partial = zodiacResult;
-                        System.out.println(TimeUtil.GetTime(true) + "\t使用parseZodiacValue解析成功");
+                    // 2. 尾解析（parseEndNum）
+                    Map<Integer, Double> endNumResult = parseEndNum(toSimpleNumStr);
+                    if (endNumResult != null) {
+                        partial = endNumResult;
+                        System.out.println(TimeUtil.GetTime(true) + "\t尾解析-parseEndNum解析成功");
                     } else {
-                        // 3. 最后根据是否包含“各/个”选择解析器
-                        boolean hasGe = containsGeOrGe(subStrTrimToValidStart);
-                        if (!hasGe) {
-                            partial = parseSingle(subStrTrimToValidStart);
-                            System.out.println(TimeUtil.GetTime(true) + "\t使用parseSingle解析");
+                        // 3. 波色解析
+                        Map<Integer, Double> colorResult = parseColorNum(toSimpleNumStr);
+                        if (colorResult != null && !colorResult.isEmpty()) {
+                            partial = colorResult;
+                            System.out.println(TimeUtil.GetTime(true) + "\t波色解析-parseColorNum解析成功");
                         } else {
-                            partial = parseCommon(subStrTrimToValidStart);
-                            System.out.println(TimeUtil.GetTime(true) + "\t使用parseCommon解析");
+                            // 4. 生肖解析
+                            Map<Integer, Double> zodiacResult = parseZodiacValue(toSimpleNumStr);
+                            if (!zodiacResult.isEmpty()) {
+                                partial = zodiacResult;
+                                System.out.println(TimeUtil.GetTime(true) + "\t生肖解析-parseZodiacValue解析成功");
+                            } else {
+                                // 5. 根据是否包含“各/个”选择基础解析器
+                                boolean hasGe = containsGeOrGe(toSimpleNumStr);
+                                if (!hasGe) {
+                                    partial = parseSingle(toSimpleNumStr);
+                                    System.out.println(TimeUtil.GetTime(true) + "\t“各/个”选择基础解析-parseSingle解析");
+                                } else {
+                                    partial = parseCommon(toSimpleNumStr);
+                                    System.out.println(TimeUtil.GetTime(true) + "\t使用parseCommon解析");
+                                }
+                            }
                         }
                     }
                 }
 
                 // 如果解析结果为空，则警告并跳过
                 if (partial.isEmpty()) {
-                    System.out.println(TimeUtil.GetTime(true) + "\t警告: 无法解析:" + subStrTrimToValidStart );
+                    System.out.println(TimeUtil.GetTime(true) + "\t警告: 无法解析:" + toSimpleNumStr );
                     continue;
                 }
 
@@ -126,8 +163,8 @@ public class MatrixNumberParser {
      * @return
      */
     private static List<String> splitByMiKeepingMi(String input) {
-        // 匹配每个“米”之后的位置，分割时保留“米”在前一部分
-        String[] array = input.split("(?<=米)");
+        // 匹配每个“米”或“块”之后的位置，分割时保留“米”或“块”在前一部分
+        String[] array = input.split("(?<=米|块)");
         return Arrays.asList(array);
     }
 
@@ -145,7 +182,7 @@ public class MatrixNumberParser {
             char ch = str.charAt(index);
             // 判断是否为ASCII数字或保留中文字符
             if ((ch >= '0' && ch <= '9') || KEEP_CHINESE.contains(ch)) {
-                return str.substring(index); // 从合法位置开始截取
+                return str.substring(index).replaceAll("号","-"); // 从合法位置开始截取,同时把'号'字调整为'-'
             }
             index++; // 否则跳过当前字符
         }
@@ -210,7 +247,7 @@ public class MatrixNumberParser {
     }
 
     /**
-     * 解析字符串，例如 "0尾各20米" 或 "5尾个30米"
+     * 解析尾字符串，例如 "0尾各20米" 或 "5尾个30米"
      * @param input 输入字符串
      * @return 数字 -> 值的映射
      * @throws IllegalArgumentException 如果格式无法解析
@@ -264,6 +301,56 @@ public class MatrixNumberParser {
         return result;
     }
 
+    /**
+     * 解析头字符串
+     * @param input
+     * @return
+     */
+    private static Map<Integer, Double> parseHeadNum(String input) {
+        // 去除所有空格
+        String trimmed = input.replaceAll("\\s+", "");
+
+        // 正则表达式： 头部数字部分 + "头" + "各/个" + 数值 + 可选单位
+        Pattern pattern = Pattern.compile("^(.*?)头[各个](\\d+(?:\\.\\d+)?)(?:[元斤米])?$");
+        Matcher matcher = pattern.matcher(trimmed);
+        if (!matcher.matches()) {
+            System.out.println(TimeUtil.GetTime(true) + "\t解析失败: " + input);
+            return null;
+        }
+
+        String headPart = matcher.group(1);   // "头"前面的部分
+        double value = Double.parseDouble(matcher.group(2));
+
+        // 从 headPart 中提取所有数字序列（十位数值）
+        Pattern digitPattern = Pattern.compile("\\d+");
+        Matcher digitMatcher = digitPattern.matcher(headPart);
+        Set<Integer> heads = new HashSet<>(); // 使用Set去重
+        while (digitMatcher.find()) {
+            String numStr = digitMatcher.group();
+            int head = Integer.parseInt(numStr); // 直接作为十位数值
+            heads.add(head);
+            // 如果数字有多位，可以给出提示（但头通常是0-4，不超过9）
+            if (numStr.length() > 1 && head > 9) {
+                System.out.println(TimeUtil.GetTime(true) + "\t提示: 提取到多位数字 " + numStr + "，其值 " + head + " 作为头（十位）");
+            }
+        }
+
+        if (heads.isEmpty()) {
+            System.out.println(TimeUtil.GetTime(true) + "\t错误: 未提取到有效头数");
+            return null;
+        }
+
+        // 生成映射：1~49 中所有十位等于 head 的数字
+        Map<Integer, Double> result = new HashMap<>();
+        for (int head : heads) {
+            for (int i = 1; i <= 49; i++) {
+                if (i / 10 == head) {
+                    result.put(i, value);
+                }
+            }
+        }
+        return result;
+    }
 
     /**
      * 解析无'各'和'个'的类型
@@ -310,13 +397,16 @@ public class MatrixNumberParser {
         String numbersPart = input.substring(0, index).trim();
         String valuePart = input.substring(index + 1).trim();
 
-        // 从valuePart提取第一个数值（整数或小数）
-        Pattern valuePattern = Pattern.compile("^(\\d+(?:\\.\\d+)?)");
+        // 正则添加可选负号，匹配 -50、50、-50.5 等形式
+        Pattern valuePattern = Pattern.compile("^(-?\\d+(?:\\.\\d+)?)");
         Matcher valueMatcher = valuePattern.matcher(valuePart);
         if (!valueMatcher.find()) {
             return result;
         }
-        double y = Double.parseDouble(valueMatcher.group(1));
+        double rawValue = Double.parseDouble(valueMatcher.group(1));
+
+        // 取绝对值,因为此时'各'、'个'的后面可能还有'-'
+        double y = Math.abs(rawValue);
 
         // 从numbersPart提取所有整数
         Pattern numPattern = Pattern.compile("\\d+");
@@ -339,7 +429,8 @@ public class MatrixNumberParser {
         if (input == null || input.isEmpty()) {
             return result;
         }
-        String text = trimToValidStart(input);
+        // String text = trimToValidStart(input.replaceAll("，", ""));
+        String text = trimToValidStart(input.replaceAll("\\p{P}", ""));
         if (text.isEmpty()) {
             return result;
         }
@@ -358,10 +449,7 @@ public class MatrixNumberParser {
                 zodiacs.append(text.charAt(i));
                 i++;
             }
-            // 此时i指向第一个非生肖字符
-
-            // 从i开始向后查找，跳过无关字符，直到遇到“各”、“个”或新的生肖
-            boolean foundSeparator = false;
+            // 此时i指向第一个非生肖字符,从i开始向后查找,跳过无关字符,直到遇到“各”、“个”或新的生肖
             while (i < text.length()) {
                 char ch = text.charAt(i);
                 String s = String.valueOf(ch);
@@ -370,26 +458,36 @@ public class MatrixNumberParser {
                     break;
                 } else if (ch == '各' || ch == '个') {
                     // 找到分隔符
-                    foundSeparator = true;
                     i++; // 跳过分隔符
                     // 跳过可能的空格
                     while (i < text.length() && text.charAt(i) == ' ') i++;
-                    // 提取连续数字
+                    // 提取数字（支持可选负号和小数点）
                     int numStart = i;
-                    while (i < text.length() && Character.isDigit(text.charAt(i))) {
+                    // 检查是否有负号
+                    if (i < text.length() && text.charAt(i) == '-') {
+                        i++;
+                    }
+                    // 提取数字和小数点
+                    while (i < text.length() && (Character.isDigit(text.charAt(i)) || text.charAt(i) == '.')) {
                         i++;
                     }
                     if (numStart < i) {
-                        double value = Integer.parseInt(text.substring(numStart, i));
-                        // 为每个生肖对应的所有号码赋值
-                        for (int j = 0; j < zodiacs.length(); j++) {
-                            String zodiac = String.valueOf(zodiacs.charAt(j));
-                            List<Integer> numbers = ZODIAC_MAP.get(zodiac);
-                            if (numbers != null) {
-                                for (int num : numbers) {
-                                    result.put(num, value);
+                        try {
+                            String numStr = text.substring(numStart, i);
+                            double rawValue = Double.parseDouble(numStr);
+                            double value = Math.abs(rawValue); // 取绝对值
+                            // 为每个生肖对应的所有号码赋值
+                            for (int j = 0; j < zodiacs.length(); j++) {
+                                String zodiac = String.valueOf(zodiacs.charAt(j));
+                                List<Integer> numbers = ZODIAC_MAP.get(zodiac);
+                                if (numbers != null) {
+                                    for (int num : numbers) {
+                                        result.put(num, value);
+                                    }
                                 }
                             }
+                        } catch (NumberFormatException e) {
+                            // 数字格式错误，忽略该组
                         }
                     }
                     break; // 处理完当前组，退出内层循环
@@ -414,4 +512,46 @@ public class MatrixNumberParser {
         return str.contains("个") || str.contains("各");
     }
 
+    /**
+     * 解析波板格式
+     */
+    private static Map<Integer, Double> parseColorNum(String clause) {
+        // 正则匹配两种格式：
+        // 1. (红|蓝|绿)(双|单)(各|个)(\d+)米
+        // 2. (红|蓝|绿)(各|个)(\d+)米
+        // 使用非捕获组 (?:各|个) 避免改变捕获组索引
+        Pattern pattern = Pattern.compile("(红|蓝|绿)(双|单)?(?:各|个)(\\d+)米");
+        Map<Integer, Double> result = new HashMap<>();
+        clause = clause.trim();
+        if (clause.isEmpty()) {
+            return null;
+        }
+        Matcher matcher = pattern.matcher(clause);
+        if (matcher.find()) {
+            String waveName = matcher.group(1);
+            String parity = matcher.group(2); // 可能为 null
+            double value = Double.parseDouble(matcher.group(3));
+
+            Set<Integer> numbers = WAVE_MAP.get(waveName);
+            if (numbers != null) {
+                if (parity == null) {
+                    // 无单双，所有数字都加入
+                    for (int num : numbers) {
+                        result.put(num, value);
+                    }
+                } else {
+                    // 有单双，按奇偶筛选
+                    for (int num : numbers) {
+                        boolean isEven = (num % 2 == 0);
+                        if (("双".equals(parity) && isEven) || ("单".equals(parity) && !isEven)) {
+                            result.put(num, value);
+                        }
+                    }
+                }
+            }
+            return result;
+        } else {
+            return null;
+        }
+    }
 }
